@@ -9,7 +9,7 @@ m=[2 -4 3;0 -4 3;0 0 3];
 y=(m)';
 [x z]=size(y);
 k=0.01;
-T=3;
+T=10;
 t= 0:k:T;
 
 for j=1:x
@@ -18,7 +18,7 @@ for j=1:x
         if(i==1)
            s(j,:) = y(j,i)*rectangularPulse((i-1)*T/z, i*T/z,t);        
         else
-      s(j,:) = s(j,:) + y(j,i)*rectangularPulse((i-1)*T/z, i*T/z,t);
+           s(j,:) = s(j,:) + y(j,i)*rectangularPulse((i-1)*T/z, i*T/z,t);
         end
     end
 end
@@ -34,16 +34,13 @@ for j = 2: x
     end 
 
     g(j,:)= s(j,:) - sum;
-    if (floor(g(j,:)*100)/100 <1.0e-4)
-        g(j,:)=0;
+    if abs(g(j,:))< 0.00001 
         break;
     end
     
 phi(j,:) = g(j,:)/sqrt(trapz(t,g(j,:).^2));
 
-if (floor(phi(j,:)*100)/100 <1.0e-3)
-    phi(j,:)=0;
-end
+
 figure;plot(t,phi(j,:));
 
 end
@@ -64,11 +61,8 @@ end
 
 a=sqrt(trapz(t,s(1,:).^2 )) ;  
 
-%b= [trapz(t,phi(1,:).*s(2,:)) trapz(t,phi(2,:).*s(2,:))];
-%c= [trapz(t,phi(1,:).*s(3,:)) trapz(t,phi(2,:).*s(3,:))];
-
 for i=2:x
-    for  j=1:x-1
+    for  j=1:x
         try
             b(i,j)=trapz(t,phi(j,:).*s(i,:));
         end
@@ -84,12 +78,13 @@ if lb<3
     end
     grid on;
 else
-    for i=1:(ceil((lb)/3))   
+    for i=1:(ceil((lb)/3))
+    r=(i-1)*round((5/3 - floor(5/3))*3);
     figure;
     plot3([0 a],[0 0],[0 0]);
     for j=2:wb
         hold on
-        plot3([0 b(j,1+(i-1))],[0 b(j,2+(i-1))],[0 b(j,3+(i-1))]);
+        plot3([0 b(j,1+r)],[0 b(j,2+r)] ,[0 b(j,3+r)]);
     end
     grid on; 
     end
