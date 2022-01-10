@@ -1,0 +1,106 @@
+clc
+clear
+close all
+
+m=[1 1 0 1; 0 1 1 1; 0 0 1 1];
+%m=[1 0 1;0 1 -1];
+
+y=(m)';
+[x z]=size(y);
+k=0.01;
+T=10;
+t= 0:k:T;
+
+for j=1:x
+    up=0; 
+    for i=1:z
+        if(i==1)
+           s(j,:) = y(j,i)*rectangularPulse((i-1)*T/z, i*T/z,t);        
+        else
+      s(j,:) = s(j,:) + y(j,i)*rectangularPulse((i-1)*T/z, i*T/z,t);
+        end
+    end
+end
+
+phi(1,:) =  s(1,:) ./sqrt(trapz(t,s(1,:).^2 ));
+%figure;plot(t,phi(1,:))
+
+for j = 2: x  
+    sum=0;
+    for i = 1: j-1
+        sum = sum + phi(i,:)*trapz(t,phi(i,:).*s(j,:));
+    end 
+
+    g(j,:)= s(j,:) - sum;
+    if (floor(g(j,:)*100)/100 <1.0e-4)
+        g(j,:)=0;
+        break;
+    end
+    
+phi(j,:) = g(j,:)/sqrt(trapz(t,g(j,:).^2));
+
+if (floor(phi(j,:)*100)/100 <1.0e-3)
+    phi(j,:)=0;
+end
+%figure;plot(t,phi(j,:));
+
+end
+%%
+[wp lp]=size(phi);
+for j=1:wp
+    phi(j,1)=phi(j,2);
+    phi(j,lp)=phi(j,lp -1);
+    
+    for i=2:lp-1
+        if ((phi(j,i)~=phi(j,i-1) && phi(j,i)~=phi(j,i+1)))
+            phi(j,i)=phi(j,i-1);
+        end
+    end
+end
+
+%%
+
+a=sqrt(trapz(t,s(1,:).^2 )) ;  
+
+%b= [trapz(t,phi(1,:).*s(2,:)) trapz(t,phi(2,:).*s(2,:))];
+%c= [trapz(t,phi(1,:).*s(3,:)) trapz(t,phi(2,:).*s(3,:))];
+
+for i=2:x
+    for  j=1:x-1
+        b(i,j)=trapz(t,phi(j,:).*s(i,:));
+    end
+end
+[wb lb]=size(b);
+if x<=3
+    figure;
+    plot([0 a],[0 0]);
+    for j=2:wb
+        hold on
+        plot3([0 b(j,1)],[0 b(j,2)]);
+    end
+    grid on;
+elseif x==4
+    for i=1:(round    
+    figure;
+    plot3([0 a],[0 0],[0 0]);
+    for j=2:wb
+        hold on
+        plot3([0 b(j,1+(i-1))],[0 b(j,2+(i-1))],[0 b(j,3+(i-1))]);
+    end
+    grid on; 
+    end
+    
+    
+else
+    for i=1: (floor((x-1)/3)+1)       
+    figure;
+    plot3([0 a],[0 0],[0 0]);
+    for j=2:wb
+        hold on
+        plot3([0 b(j,1+(i-1))],[0 b(j,2+(i-1))],[0 b(j,3+(i-1))]);
+    end
+    grid on; 
+    end
+    
+    
+end
