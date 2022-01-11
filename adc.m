@@ -2,8 +2,8 @@ clc
 clear
 close all
 
-%m=[1 0 1 1 1; 0 1 1 1 1; 0 1 1 1 0; 0 1 0 1 0; 1 1 1 0 0];
-m=[1 0 1;0 1 -1];
+m=[1 1 0 1 ; 0 1 1 1; 0 1 1 1; 0 1 0 1; 1 1 1 0];
+%m=[1 0 1;0 1 -1];
 %m=[2 -4 3;0 -4 3;0 0 3];
 
 y=(m)';
@@ -77,7 +77,6 @@ if lb<3
         plot([0 b(j,1)],[0 b(j,2)]);
     end
     grid on;
-    
 elseif lb==3
     figure;
     plot3([0 a],[0 0],[0 0]);
@@ -86,25 +85,20 @@ elseif lb==3
         plot3([0 b(j,1)],[0 b(j,2)] ,[0 b(j,3)]);
     end
     grid on; 
-    
 else
-    for i=1:lb
-        figure;
-        plot3([0 a],[0 0],[0 0]);
-        axis1=i+1;
-        axis2=i+2;
-        if (axis2>lb)
-            axis2=1;
-        end        
-        if (axis1>lb)
-            axis1=1;
-            axis2=2;
-        end
-        for j=2:wb
-            hold on
-            plot3([0 b(j,i)],[0 b(j,2)] ,[0 b(j,3)]);
-        end
-        grid on; 
+    for axis1=1:lb
+    for axis2=axis1+1:lb
+    for axis3=axis2+1:lb
+    figure;
+    plot3([0 a],[0 0],[0 0]);
+    for j=2:wb
+        hold on
+        plot3([0 b(j,axis1)],[0 b(j,axis2)] ,[0 b(j,axis3)]);
     end
+    grid on;
+    end
+    end
+    end
+    
+    
 end
-
